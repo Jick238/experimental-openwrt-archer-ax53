@@ -7,7 +7,7 @@
 5. Automatic native ART extraction and firmware selection in the device profile.
 6. Clean reproducible images, long-term stability, client-side HE negotiation and throughput.
 7. Validated install, recovery and sysupgrade workflows.
-8. End-to-end client internet and DNS: router IP connectivity worked; Cudy DNS returned REFUSED during testing. Do not attribute that upstream DNS issue to ath11k.
+8. End-to-end Wi-Fi client connectivity and throughput validation remain incomplete; router-level Internet probes alone do not validate the client path.
 
 No claim of official support, complete Wi-Fi 6 operation or safe general installation is made.
 
@@ -29,10 +29,9 @@ Matching6.18.52 modules were compiled and saved to the device overlay after hash
 
 ## Latest kernel/module update and telemetry
 
-The 953+954 ath11k build started both APs. Applying 802.11r settings on both
-interfaces succeeded without a reboot or observed Q6 restart failure;
-client roaming and all reload variants remain untested. One subsequent
-ordinary software reboot returned, with no OOM/allocstall in early samples.
+The 953+954 ath11k build started both APs. Reload reliability and client
+throughput remain under investigation. One subsequent ordinary software
+reboot returned, with no OOM/allocstall in early samples.
 Available memory varied from about 57 MiB shortly after boot to 32–39 MiB
 later; this is not a controlled comparison with the previous driver.
 
