@@ -26,3 +26,23 @@ Remote syslog captured `hostapd invoked oom-killer` at uptime about287 seconds. 
 Added optional patch `953-ath11k-reduce-rx-rings-experimental-256m.patch`, based on Yanko Yankulov's IPQ5018/MR80X commit https://github.com/yanko-yankulov/openwrt-mr80x/commit/ee7747f48999cae66e686d464dceaf838398309e . It reduces RXDMA_BUF4096→512, MON_STATUS1024→128 and MONITOR_BUF4096→128. This is a build-wide experimental limit and can reduce buffering/throughput; it is not a generally validated upstream fix.
 
 Matching6.18.52 modules were compiled and saved to the device overlay after hashes were checked, with original modules retained for rollback. A live module reload freed substantial RAM but Q6 then failed to restart with timeout -110. A subsequent cold boot loaded the optimized module and both APs came up with client association. At about114 seconds, MemAvailable was45688 KiB (an earlier old-module snapshot was14236 KiB). Long-term stability and throughput evaluation remain pending; these snapshots are not a controlled benchmark. No ART, bootloader or kernel FIT change was performed for this optimization.
+
+## Latest kernel/module update and telemetry
+
+The 953+954 ath11k build started both APs. Applying 802.11r settings on both
+interfaces succeeded without a reboot or observed Q6 restart failure;
+client roaming and all reload variants remain untested. One subsequent
+ordinary software reboot returned, with no OOM/allocstall in early samples.
+Available memory varied from about 57 MiB shortly after boot to 32–39 MiB
+later; this is not a controlled comparison with the previous driver.
+
+The patched Realtek file in overlay was **not the loaded driver**: preinit
+still loaded the old ROM module. Therefore the successful reboot cannot be
+attributed to PR25153. The Q6 timeout/cleanup and intermittent startup
+investigations remain open.
+
+Passive monitoring records gateway/internet ICMP loss, Armbian-to-router
+reachability, memory, netdev counter deltas, ath11k RXDMA/REO/TCL counters,
+and aggregate station retry/failure counts. This does not prove client-side
+Wi-Fi loss or establish that a counter increase was caused by smaller rings.
+See monitoring/README.md for boundaries and storage limits.

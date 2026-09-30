@@ -14,10 +14,12 @@ Experimental device port and research notes, tested on one physical AX53 EU v1 o
 | 2.4 GHz | IPQ5018 ath11k; TEST AP independently observed in HT20 |
 | 5 GHz | QCN6102-family radio; TEST AP independently observed in VHT80; phone association reported |
 | Wi-Fi 6 | Unresolved regional behavior: RU yields firmware-derived NO-HE; later US/HE80 configuration starts a 5 GHz AP, but negotiated HE/client performance is not verified |
-| Warm reboot | Intermittent failure to return after enabling Wi-Fi; cold power cycle restores access. Cause unproven |
+| Warm reboot | Earlier intermittent failures; one ordinary warm reboot returned after the latest kernel/ath11k update. Cause remains unproven; Realtek boot patch is not active in the old ROM |
 | Routing / NAT / WAN separation | Not validated; tested as a bridged access point |
 | Internet through Wi-Fi client | Not yet independently validated end to end |
 | sysupgrade / factory installation | Not validated; device-specific sysupgrade deliberately refuses |
+
+Latest update: experimental TX/monitor pool reductions built and installed, successful 802.11r configuration reload on both APs, and bounded remote health logging. See [worklog](docs/WORKLOG.md) and [monitoring](monitoring/README.md). FT roaming itself has not been validated.
 
 ## Source basis
 

@@ -1,0 +1,21 @@
+[Unit]
+Description=Bounded Archer AX53 remote syslog receiver
+Wants=network-online.target
+After=network-online.target
+[Service]
+Type=simple
+DynamicUser=yes
+StateDirectory=ax53-monitor
+StateDirectoryMode=0700
+EnvironmentFile=/etc/ax53-log-receiver.conf
+ExecStart=/usr/bin/python3 /usr/local/lib/ax53-monitor/receiver.py
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+MemoryMax=48M
+[Install]
+WantedBy=multi-user.target

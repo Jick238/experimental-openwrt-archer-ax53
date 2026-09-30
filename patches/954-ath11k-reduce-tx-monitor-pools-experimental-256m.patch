@@ -1,0 +1,43 @@
+Subject: ath11k: further reduce TX completion and monitor pools for AX53
+
+Experimental build-wide limits for this experimental 256 MiB AX53 build.
+Must follow 953-ath11k-reduce-rx-rings-experimental-256m.patch.
+
+Small-buffer prior art: Ziyang Huang's OpenWrt PR #21495 reduces TX
+completion entries to 2048 and monitor destination entries to 128:
+https://github.com/openwrt/openwrt/pull/21495
+Use less aggressive 8192/512 entries here; also shrink the separately
+allocated monitor link-descriptor pool from 4096 to 1024 entries.
+
+DP_TX_IDR_SIZE and ATH11K_TX_COMPL_NEXT derive from DP_TX_COMP_RING_SIZE,
+as do the hardware completion ring and software tx_status allocation.
+Keep their capacities and wrap arithmetic consistent. Do not shrink
+DP_RXDMA_REFILL_RING_SIZE: it is passed as the RX filter buffer size in
+monitor configuration, not allocated as another refill queue here.
+
+This is not an upstream-validated configuration. Smaller pools can lose
+completion/monitor events or limit burst throughput. Long-term throughput and
+stability validation remain pending; retain patch 953 alone
+as the previously exercised fallback.
+
+--- a/drivers/net/wireless/ath/ath11k/dp.h
++++ b/drivers/net/wireless/ath/ath11k/dp.h
+@@ -205,7 +205,7 @@
+ #define DP_WBM_RELEASE_RING_SIZE	64
+ #define DP_TCL_DATA_RING_SIZE		512
+ #define DP_TCL_DATA_RING_SIZE_WCN6750	2048
+-#define DP_TX_COMP_RING_SIZE		32768
++#define DP_TX_COMP_RING_SIZE		8192
+ #define DP_TX_IDR_SIZE			DP_TX_COMP_RING_SIZE
+ #define DP_TCL_CMD_RING_SIZE		32
+ #define DP_TCL_STATUS_RING_SIZE		32
+@@ -221,8 +221,8 @@
+ #define DP_RXDMA_ERR_DST_RING_SIZE	1024
+ #define DP_RXDMA_MON_STATUS_RING_SIZE	128
+ #define DP_RXDMA_MONITOR_BUF_RING_SIZE	128
+-#define DP_RXDMA_MONITOR_DST_RING_SIZE	2048
+-#define DP_RXDMA_MONITOR_DESC_RING_SIZE	4096
++#define DP_RXDMA_MONITOR_DST_RING_SIZE	512
++#define DP_RXDMA_MONITOR_DESC_RING_SIZE	1024
+ 
+ #define DP_RX_RELEASE_RING_NUM	3
