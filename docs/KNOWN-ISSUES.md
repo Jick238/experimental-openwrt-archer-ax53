@@ -18,3 +18,11 @@ A live follow-up found a 5 GHz client reporting HE-MCS 9 / HE-NSS 2 while UCI se
 Management disappeared through Ethernet while the physical link remained up. The SSID was reported to appear and then disappear. Management subsequently returned with a short uptime, so the device had started again; the available evidence does not distinguish a user power cycle from an automatic restart or identify where the earlier loss occurred.
 
 Next evidence needed: timestamped UCI/ubus/hostapd/iw snapshots plus numeric firmware regulatory events for both PHYs, and persistent logs around the loss of access. Compare both radios using a consistent country and HT/VHT baseline before isolating the HE failure. No client credentials, personal addresses or packet captures are included.
+
+## OOM evidence and experimental mitigation
+
+Remote syslog captured `hostapd invoked oom-killer` at uptime about287 seconds. A subsequent snapshot at about25 seconds showed MemTotal183220 KiB, MemAvailable14236 KiB, AnonPages7036 KiB and Slab31084 KiB. User processes were small; memory pressure cannot be attributed to hostapd RSS from this evidence. RX page-buffer consumption in ath11k is a leading hypothesis, not yet proven by page-owner tracing.
+
+Added optional patch `953-ath11k-reduce-rx-rings-experimental-256m.patch`, based on Yanko Yankulov's IPQ5018/MR80X commit https://github.com/yanko-yankulov/openwrt-mr80x/commit/ee7747f48999cae66e686d464dceaf838398309e . It reduces RXDMA_BUF4096→512, MON_STATUS1024→128 and MONITOR_BUF4096→128. This is a build-wide experimental limit and can reduce buffering/throughput; it is not a generally validated upstream fix.
+
+Matching6.18.52 modules were compiled and saved to the device overlay after hashes were checked, with original modules retained for rollback. Runtime reload and stability evaluation are pending. No ART, bootloader or kernel FIT change was performed for this optimization.

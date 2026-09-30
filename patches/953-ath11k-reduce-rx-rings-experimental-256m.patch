@@ -1,0 +1,26 @@
+Subject: ath11k: reduce RX buffer rings for experimental 256 MiB AX53 build
+
+Based on Yanko Yankulov's IPQ5018 / MR80X low-memory patch:
+https://github.com/yanko-yankulov/openwrt-mr80x/commit/ee7747f48999cae66e686d464dceaf838398309e
+
+Experimental build-wide limits, not a generally validated upstream change.
+AX53 runtime OOM is observed; RX buffer attribution is still a hypothesis.
+Reduced buffering may reduce throughput under bursts.
+
+--- a/drivers/net/wireless/ath/ath11k/dp.h
++++ b/drivers/net/wireless/ath/ath11k/dp.h
+@@ -216,11 +216,11 @@
+ #define DP_REO_EXCEPTION_RING_SIZE	128
+ #define DP_REO_CMD_RING_SIZE		256
+ #define DP_REO_STATUS_RING_SIZE		2048
+-#define DP_RXDMA_BUF_RING_SIZE		4096
++#define DP_RXDMA_BUF_RING_SIZE		512
+ #define DP_RXDMA_REFILL_RING_SIZE	2048
+ #define DP_RXDMA_ERR_DST_RING_SIZE	1024
+-#define DP_RXDMA_MON_STATUS_RING_SIZE	1024
+-#define DP_RXDMA_MONITOR_BUF_RING_SIZE	4096
++#define DP_RXDMA_MON_STATUS_RING_SIZE	128
++#define DP_RXDMA_MONITOR_BUF_RING_SIZE	128
+ #define DP_RXDMA_MONITOR_DST_RING_SIZE	2048
+ #define DP_RXDMA_MONITOR_DESC_RING_SIZE	4096
+ 
